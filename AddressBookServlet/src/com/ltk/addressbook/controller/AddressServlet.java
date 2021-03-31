@@ -38,25 +38,34 @@ public class AddressServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		String action = req.getParameter(req_action_parameter);
 
-		if (action_form_parameter.equals(action)) {
-			RequestDispatcher rd = getServletContext().getRequestDispatcher(form_jsp_root);
-			rd.forward(req, resp);
-		} else if (action_delete_parameter.equals(action)) {
-			Long id = Long.valueOf(req.getParameter(TABLE_ID_NAME));
+		try {
+			if (action_form_parameter.equals(action)) {
+				RequestDispatcher rd = getServletContext().getRequestDispatcher(form_jsp_root);
+				rd.forward(req, resp);
+			} else if (action_delete_parameter.equals(action)) {
+				Long id = Long.valueOf(req.getParameter(TABLE_ID_NAME));
 
-			AddressDao dao = new AddressDaoOraclempl();
-			dao.delete(id);
-			resp.sendRedirect(req.getContextPath() + urlPatterns);
-		} else if (action_search_parameter.equals(action)) {
-			AddressDao dao = new AddressDaoOraclempl();
+				AddressDao dao = new AddressDaoOraclempl();
+				dao.delete(id);
+				resp.sendRedirect(req.getContextPath() + urlPatterns);
+			} else if (action_search_parameter.equals(action)) {
+				AddressDao dao = new AddressDaoOraclempl();
 
-			List<AddressVo> list = dao.search(req.getParameter(TABLE_SERACH_NAME));
-			req.setAttribute(TABLE_SERACH_NAME, req.getParameter(TABLE_SERACH_NAME));
-			req.setAttribute(TABLE_LIST_NAME, list);
+				List<AddressVo> list = dao.search(req.getParameter(TABLE_SERACH_NAME));
+				req.setAttribute(TABLE_SERACH_NAME, req.getParameter(TABLE_SERACH_NAME));
+				req.setAttribute(TABLE_LIST_NAME, list);
 
-			RequestDispatcher rd = getServletContext().getRequestDispatcher(index_jsp_root);
-			rd.forward(req, resp);
-		} else {
+				RequestDispatcher rd = getServletContext().getRequestDispatcher(index_jsp_root);
+				rd.forward(req, resp);
+			} else {
+				AddressDao dao = new AddressDaoOraclempl();
+				List<AddressVo> list = dao.getList();
+
+				req.setAttribute(TABLE_LIST_NAME, list);
+				RequestDispatcher rd = getServletContext().getRequestDispatcher(index_jsp_root);
+				rd.forward(req, resp);
+			}
+		} catch (Exception e) {
 			AddressDao dao = new AddressDaoOraclempl();
 			List<AddressVo> list = dao.getList();
 
